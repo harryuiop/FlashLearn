@@ -32,19 +32,27 @@ import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import com.example.seng303_assignment1.screens.NewFlashCard
 import com.example.seng303_assignment1.ui.theme.Seng303assignment1Theme
+import com.example.seng303_assignment1.viewModels.FlashCardViewModel
+import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel as koinViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val flashCardViewModel: FlashCardViewModel by koinViewModel()
+    private val newFlashCardViewModel: NewFlashCardViewModel by koinViewModel()
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        flashCardViewModel.loadDefaultCardsIfNoneExist()
         setContent {
             var isDarkTheme by remember { mutableStateOf(true) }
-
             Seng303assignment1Theme(darkTheme = isDarkTheme){
                 val navController = rememberNavController()
                 Scaffold(
@@ -64,6 +72,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     Box(modifier = Modifier.padding(it)) {
+
                         NavHost(navController = navController, startDestination = "Home") {
                             composable("Home") {
                                 Home(navController = navController, isDarkTheme, onToggleTheme = {
@@ -71,7 +80,7 @@ class MainActivity : ComponentActivity() {
                                 })
                             }
                             composable("NewFlashCard") {
-                                NewFlashCard(navController = navController)
+                                NewFlashCard(navController = navController, newFlashCardViewModel = newFlashCardViewModel)
                             }
                         }
                     }

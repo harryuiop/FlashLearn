@@ -12,7 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
@@ -32,13 +31,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.seng303_assignment1.model.AnswerOption
+import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewFlashCard(navController: NavController) {
+fun NewFlashCard(navController: NavController, newFlashCardViewModel: NewFlashCardViewModel) {
     val context = LocalContext.current
-    var question by remember { mutableStateOf("") }
+
     var checked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
@@ -65,46 +66,55 @@ fun NewFlashCard(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = question,
-                onValueChange = { question = it },
+                value = newFlashCardViewModel.fetchQuestion(),
+                onValueChange = { newFlashCardViewModel.updateQuestion(it) },
                 label = { Text("Question") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = { checked = it }
-                )
-                OutlinedTextField(
-                    value = question,
-                    onValueChange = { question = it },
-                    label = { Text("Answer option") },
-                    modifier = Modifier.weight(1f) // Ensure the text field takes up remaining space
-                )
+            newFlashCardViewModel.fetchAnswerOptions().forEachIndexed { index, answer ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Checkbox(
+                        checked = checked,
+                        onCheckedChange = { checked = it }
+                    )
+                    OutlinedTextField(
+                        value = answer.answerText,
+                        onValueChange = { newAnswer ->
+                            newFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
+                        },
+                        label = { Text("Answer option") },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {}
+                onClick = {
+                    newFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+                }
             ) {
                 Icon(
                     Icons.Rounded.Add,
-                    contentDescription = "Toggle Theme"
+                    contentDescription = "Add Answer Option"
                 )
             }
         }
 
-        // Save and Return Button placed at the bottom
         Button(
-            onClick = {},
+            onClick = {
+                newFlashCardViewModel.saveFlashCard()
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Save and return")
