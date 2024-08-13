@@ -70,7 +70,6 @@ class NewFlashCardViewModel(
 }
 
 private fun generateFlashCardId(): Int {
-    // Implement a method to generate a unique ID, e.g., by finding the max ID and incrementing it
     val randomInt = Random.nextInt(1, 1000)
     return randomInt
 }
