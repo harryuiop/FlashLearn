@@ -1,7 +1,6 @@
 package com.example.seng303_assignment1
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -33,16 +32,13 @@ import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
-import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.screens.NewFlashCard
 import com.example.seng303_assignment1.ui.theme.Seng303assignment1Theme
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
-import kotlinx.coroutines.flow.catch
 import org.koin.androidx.viewmodel.ext.android.viewModel as koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -53,7 +49,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        flashCardViewModel.loadDefaultFlashCardIfNoneExist()
+        flashCardViewModel.loadDefaultFlashCardIfNoneExist()
         setContent {
             var isDarkTheme by remember { mutableStateOf(true) }
             Seng303assignment1Theme(darkTheme = isDarkTheme){

@@ -63,6 +63,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.insert-koin:koin-android:3.1.4")
     implementation("com.google.code.gson:gson:2.8.9")
+    implementation(libs.androidx.media3.common)
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

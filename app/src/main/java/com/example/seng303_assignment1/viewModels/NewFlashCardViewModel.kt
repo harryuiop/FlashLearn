@@ -12,7 +12,8 @@ class NewFlashCardViewModel() : ViewModel() {
     var question by mutableStateOf("")
         private set
 
-    var answerOptions by mutableStateOf(listOf(AnswerOption("", false)))
+    var answerOptions by mutableStateOf(listOf(AnswerOption("", false),
+        AnswerOption("", false), AnswerOption("", false)))
         private set
 
     fun updateQuestion(newQuestion: String) {

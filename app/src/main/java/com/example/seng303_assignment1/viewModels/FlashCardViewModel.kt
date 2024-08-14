@@ -40,15 +40,14 @@ class FlashCardViewModel(
         }
     }
 
-    fun createFlashCard(question: String, answerOptions: List<AnswerOption>) = viewModelScope.launch {
+    fun createFlashCard(question: String, answerOptions: List<AnswerOption>) =
+        viewModelScope.launch {
         val newFlashCard = FlashCard(
             id = generateFlashCardId(),
             question = question,
             answerOptions = answerOptions,
             correctAnswers = answerOptions.filter { it.isCorrect }
         )
-
-        Log.e("All", getAllFlashCards().toString())
 
         flashCardStorage.insert(newFlashCard).catch { Log.e("NOTE_VIEW_MODEL", "Could not insert note") }
             .collect()

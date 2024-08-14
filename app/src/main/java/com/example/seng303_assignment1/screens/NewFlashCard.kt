@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
@@ -28,14 +29,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.viewModelScope
 import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
-import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
-import kotlinx.coroutines.launch
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +49,8 @@ fun NewFlashCard(
     ) {
     val context = LocalContext.current
     var checked by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
     Column(
@@ -123,12 +123,52 @@ fun NewFlashCard(
 
         Button(
             onClick = {
-                createFlashCardFn(fetchQuestionFn(), fetchAnswerOptionsFn())
+                val answerOptions = fetchAnswerOptionsFn()
+                val question = fetchQuestionFn()
+
+                var hasEmptyAnswer = false
+
+                for (answer in answerOptions) {
+                    if (answer.answerText.isEmpty()) {
+                        hasEmptyAnswer = true
+                        errorMessage = "Please fill out all answer options"
+                        break
+                    }
+                }
+
+                if (question.isEmpty()) {
+                    hasEmptyAnswer = true
+                    errorMessage = "Please fill out a question"
+                }
+
+                if (!hasEmptyAnswer) {
+                    createFlashCardFn(fetchQuestionFn(), answerOptions)
+                } else {
+                    showErrorDialog = true
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Save and return")
         }
+
+        if (showErrorDialog) {
+            AlertDialog(
+                onDismissRequest = { showErrorDialog = false },
+                title = { Text("Error") },
+                text = { Text(errorMessage) },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showErrorDialog = false
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+
     }
 }
 
