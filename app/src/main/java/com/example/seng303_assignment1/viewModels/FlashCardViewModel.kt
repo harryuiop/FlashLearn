@@ -1,35 +1,73 @@
 package com.example.seng303_assignment1.viewModels
 
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.seng303_assignment1.datastore.Storage
+import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
-class FlashCardViewModel(private val flashCardStorage: Storage<FlashCard>) : ViewModel() {
+class FlashCardViewModel(
+    private val flashCardStorage: Storage<FlashCard>
+) : ViewModel() {
+
     private val _flashCards = MutableStateFlow<List<FlashCard>>(emptyList())
-    val flashCards: StateFlow<List<FlashCard>> get() = _flashCards
+    val flashCard: StateFlow<List<FlashCard>> get() = _flashCards
 
-    fun getCards() = viewModelScope.launch {
-        flashCardStorage.getAll().catch { Log.e("VIEW_FLASH_CARD_VIEW_MODEL", it.toString()) }.collect{_flashCards.emit(it)}
-    }
+    private val _selectedFlashCard = MutableStateFlow<FlashCard?>(null)
+    val selectedNote: StateFlow<FlashCard?> = _selectedFlashCard
 
-    fun loadDefaultCardsIfNoneExist() = viewModelScope.launch {
+
+    fun loadDefaultFlashCardIfNoneExist() = viewModelScope.launch {
         val currentNotes = flashCardStorage.getAll().first()
-        if(currentNotes.isEmpty()) {
-            Log.d("VIEW_FLASH_CARD_VIEW_MODEL", "Inserting default flash cards...")
-            flashCardStorage.insertAll(FlashCard.getFlashCards()).catch { Log.w("VIEW_FLASH_CARD_VIEW_MODEL", "Could not insert default notes")
-        }.collect {
-            Log.d("VIEW_FLASH_CARD_VIEW_MODEL", "Default flash cards inserted successfully")
-            _flashCards.emit(FlashCard.getFlashCards())
-            }
+        if (currentNotes.isEmpty()) {
+            Log.d("NOTE_VIEW_MODEL", "Inserting default notes...")
+            flashCardStorage.insertAll(FlashCard.getFlashCards())
+                .catch { Log.w("NOTE_VIEW_MODEL", "Could not insert default notes") }.collect {
+                    Log.d("NOTE_VIEW_MODEL", "Default notes inserted successfully")
+                    _flashCards.emit(FlashCard.getFlashCards())
+                }
         }
     }
 
+    fun createFlashCard(question: String, answerOptions: List<AnswerOption>) = viewModelScope.launch {
+        val newFlashCard = FlashCard(
+            id = generateFlashCardId(),
+            question = question,
+            answerOptions = answerOptions,
+            correctAnswers = answerOptions.filter { it.isCorrect }
+        )
+
+        Log.e("All", getAllFlashCards().toString())
+
+        flashCardStorage.insert(newFlashCard).catch { Log.e("NOTE_VIEW_MODEL", "Could not insert note") }
+            .collect()
+        flashCardStorage.getAll().catch { Log.e("NOTE_VIEW_MODEL", it.toString()) }
+            .collect { _flashCards.emit(it) }
+    }
+
+    suspend fun getAllFlashCards(): List<FlashCard> {
+        return try {
+            flashCardStorage.getAll().first()
+        } catch (e: Exception) {
+            Log.e("FLASH_CARD_VIEW_MODEL", "Error fetching flash cards: ${e.message}")
+            emptyList()
+        }
+    }
+
+    private fun generateFlashCardId(): Int {
+        val randomInt = Random.nextInt(1, 1000)
+        return randomInt
+    }
 
 }

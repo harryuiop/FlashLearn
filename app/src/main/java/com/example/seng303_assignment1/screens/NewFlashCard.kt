@@ -31,15 +31,25 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewModelScope
 import com.example.seng303_assignment1.model.AnswerOption
+import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewFlashCard(navController: NavController, newFlashCardViewModel: NewFlashCardViewModel) {
+fun NewFlashCard(
+    createFlashCardFn: (String, List<AnswerOption>) -> Unit,
+    fetchQuestionFn: () -> String,
+    updateAnswerOptionsFn: (Int, String, Boolean) -> Unit,
+    updateQuestionFn: (String) -> Unit,
+    fetchAnswerOptionsFn: () -> List<AnswerOption>,
+    addAnswerOptionFn: (AnswerOption) -> Unit,
+    flashCardViewModel: FlashCardViewModel
+    ) {
     val context = LocalContext.current
-
     var checked by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
@@ -66,15 +76,15 @@ fun NewFlashCard(navController: NavController, newFlashCardViewModel: NewFlashCa
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedTextField(
-                value = newFlashCardViewModel.fetchQuestion(),
-                onValueChange = { newFlashCardViewModel.updateQuestion(it) },
+                value = fetchQuestionFn(),
+                onValueChange = { updateQuestionFn(it) },
                 label = { Text("Question") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            newFlashCardViewModel.fetchAnswerOptions().forEachIndexed { index, answer ->
+            fetchAnswerOptionsFn().forEachIndexed { index, answer ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -87,7 +97,7 @@ fun NewFlashCard(navController: NavController, newFlashCardViewModel: NewFlashCa
                     OutlinedTextField(
                         value = answer.answerText,
                         onValueChange = { newAnswer ->
-                            newFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
+                            updateAnswerOptionsFn(index, newAnswer, false)
                         },
                         label = { Text("Answer option") },
                         modifier = Modifier.weight(1f)
@@ -101,7 +111,7 @@ fun NewFlashCard(navController: NavController, newFlashCardViewModel: NewFlashCa
 
             Button(
                 onClick = {
-                    newFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+                    addAnswerOptionFn(AnswerOption("", false))
                 }
             ) {
                 Icon(
@@ -113,7 +123,7 @@ fun NewFlashCard(navController: NavController, newFlashCardViewModel: NewFlashCa
 
         Button(
             onClick = {
-                newFlashCardViewModel.saveFlashCard()
+                createFlashCardFn(fetchQuestionFn(), fetchAnswerOptionsFn())
             },
             modifier = Modifier.fillMaxWidth()
         ) {

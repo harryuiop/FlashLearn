@@ -1,7 +1,5 @@
 package com.example.seng303_assignment1.model
 
-import com.example.seng303_assignment1.datastore.Identifiable
-
 data class FlashCard(
     val id: Int,
     val question: String,

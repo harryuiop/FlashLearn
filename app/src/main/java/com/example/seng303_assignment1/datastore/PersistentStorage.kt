@@ -1,13 +1,15 @@
+package com.example.seng303_assignment1.datastore
+
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.example.seng303_assignment1.datastore.Identifiable
-import com.example.seng303_assignment1.datastore.Storage
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import com.example.seng303_assignment1.model.Identifiable
 import java.lang.reflect.Type
 
 class PersistentStorage<T>(
@@ -15,13 +17,13 @@ class PersistentStorage<T>(
     private val type: Type,
     private val dataStore: DataStore<Preferences>,
     private val preferenceKey: Preferences.Key<String>
-) : Storage<T> where T: Identifiable{
-
+) : Storage <T> where T : Identifiable {
 
     override fun insert(data: T): Flow<Int> {
         return flow {
             val cachedDataClone = getAll().first().toMutableList()
             cachedDataClone.add(data)
+            Log.e("Storage", "Inserting FlashCard")
             dataStore.edit {
                 val jsonString = gson.toJson(cachedDataClone, type)
                 it[preferenceKey] = jsonString
@@ -43,9 +45,10 @@ class PersistentStorage<T>(
     }
 
     override fun getAll(): Flow<List<T>> {
+        Log.e("Storage", "Retrieving FlashCard")
         return dataStore.data.map { preferences ->
             val jsonString = preferences[preferenceKey] ?: EMPTY_JSON_STRING
-            val elements: List<T> = gson.fromJson(jsonString, type)
+            val elements = gson.fromJson<List<T>>(jsonString, type)
             elements
         }
     }
@@ -55,14 +58,14 @@ class PersistentStorage<T>(
             val cachedDataClone = getAll().first().toMutableList()
             val index = cachedDataClone.indexOfFirst { it.getIdentifier() == identifier }
             if (index != -1) {
-                cachedDataClone[index] = data // Update the item with the new data
-                dataStore.edit { // Save the updated list
+                cachedDataClone[index] = data  // Update the item with the new data
+                dataStore.edit {  // Save the updated list
                     val jsonString = gson.toJson(cachedDataClone, type)
                     it[preferenceKey] = jsonString
                     emit(OPERATION_SUCCESS)
                 }
             } else {
-                emit(OPERATION_FAILURE) // Handle the case when the item with the given identifier is not found
+                emit(OPERATION_FAILURE)  // Handle the case when the item with the given identifier is not found
             }
         }
     }
@@ -87,8 +90,9 @@ class PersistentStorage<T>(
     }
 
     companion object {
-        const val OPERATION_SUCCESS = 1
+        private const val OPERATION_SUCCESS = 1
         private const val OPERATION_FAILURE = -1
         private const val EMPTY_JSON_STRING = "[]"
     }
 }
+
