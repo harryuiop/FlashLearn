@@ -4,7 +4,6 @@ data class FlashCard(
     val id: Int,
     val question: String,
     val answerOptions: List<AnswerOption>,
-    val correctAnswers: List<AnswerOption>
 ) : Identifiable {
 
     override fun getIdentifier(): Int {
@@ -18,7 +17,6 @@ data class FlashCard(
                     id = 1,
                     question = "test",
                     answerOptions = listOf(AnswerOption("test2", isCorrect = true)),
-                    correctAnswers = emptyList()
                 )
             )
         }

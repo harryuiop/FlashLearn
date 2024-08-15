@@ -1,5 +1,6 @@
 package com.example.seng303_assignment1.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.seng303_assignment1.model.AnswerOption
-import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,13 +46,16 @@ fun NewFlashCard(
     updateQuestionFn: (String) -> Unit,
     fetchAnswerOptionsFn: () -> List<AnswerOption>,
     addAnswerOptionFn: (AnswerOption) -> Unit,
+    updateCorrectAnswerFn: (AnswerOption) -> Unit,
+    setCorrectAnswerFalseFn:(Int) -> Unit,
     navController: NavController
     ) {
-    val context = LocalContext.current
-    var checked by remember { mutableStateOf(false) }
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
+    var selectedAnswer by remember { mutableStateOf<AnswerOption?>(null) }
+    var selectedAnswerIndex by remember { mutableStateOf(-1) }
     val scrollState = rememberScrollState()
+
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,9 +95,24 @@ fun NewFlashCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Checkbox(
-                        checked = checked,
-                        onCheckedChange = { checked = it }
+                        checked = selectedAnswerIndex == index,
+                        onCheckedChange = { isChecked ->
+                            if (isChecked) {
+                                selectedAnswerIndex = index
+                                updateCorrectAnswerFn(fetchAnswerOptionsFn()[index])
+
+                                for (nums in 0..<fetchAnswerOptionsFn().size) {
+                                    if (nums != index) {
+                                        setCorrectAnswerFalseFn(nums)
+                                    }
+                                }
+                            } else if (selectedAnswerIndex == index) {
+                                selectedAnswerIndex = -1
+                                setCorrectAnswerFalseFn(index)
+                            }
+                        }
                     )
+
                     OutlinedTextField(
                         value = answer.answerText,
                         onValueChange = { newAnswer ->
@@ -127,6 +146,7 @@ fun NewFlashCard(
                 val question = fetchQuestionFn()
 
                 var hasEmptyAnswer = false
+                var choosenAnswer = false
 
                 for (answer in answerOptions) {
                     if (answer.answerText.isEmpty()) {
@@ -141,9 +161,20 @@ fun NewFlashCard(
                     errorMessage = "Please fill out a question"
                 }
 
+                answerOptions.forEach { answer ->
+                    if (answer.isCorrect) {
+                        choosenAnswer = true
+                    }
+                }
+
+                if (!choosenAnswer) {
+                    hasEmptyAnswer = true
+                    errorMessage = "Please confirm a correct answer"
+                }
+
                 if (!hasEmptyAnswer) {
-                    createFlashCardFn(fetchQuestionFn(), answerOptions)
-                    navController.navigate("Home")
+                        createFlashCardFn(fetchQuestionFn(), answerOptions)
+                        navController.navigate("Home")
                 } else {
                     showErrorDialog = true
                 }

@@ -20,6 +20,23 @@ class NewFlashCardViewModel() : ViewModel() {
         question = newQuestion
     }
 
+    fun updateCorrectAnswer(inputtedCorrectAnswer: AnswerOption) {
+        answerOptions.forEach {
+            if (it == inputtedCorrectAnswer) {
+                if (it.isCorrect) {
+                    it.isCorrect = false
+                } else {
+                    it.isCorrect = true
+                }
+
+            }
+        }
+    }
+
+    fun setCorrectAnswerFalse(index: Int) {
+        answerOptions[index].isCorrect = false
+    }
+
     fun updateAnswerOptions(index: Int, newAnswerText: String, isCorrect: Boolean) {
         answerOptions = answerOptions.toMutableList().apply {
             this[index] = this[index].copy(answerText = newAnswerText, isCorrect = isCorrect)
@@ -36,6 +53,11 @@ class NewFlashCardViewModel() : ViewModel() {
 
     fun fetchQuestion(): String {
         return question
+    }
+
+    fun refreshAnswerOptions() {
+        answerOptions = listOf(AnswerOption("", false),
+            AnswerOption("", false), AnswerOption("", false))
     }
 }
 

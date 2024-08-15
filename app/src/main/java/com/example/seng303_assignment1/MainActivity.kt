@@ -81,14 +81,18 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("NewFlashCard") {
                                 NewFlashCard(
-                                    createFlashCardFn = { question, answerOptions -> flashCardViewModel.createFlashCard(question, answerOptions) },
+                                    createFlashCardFn = { question, answerOptions -> flashCardViewModel.createFlashCard( question, answerOptions ) },
                                     fetchQuestionFn = { newFlashCardViewModel.fetchQuestion() },
-                                    updateAnswerOptionsFn = { index, newAnswerText, isCorrect -> newFlashCardViewModel.updateAnswerOptions(index, newAnswerText, isCorrect) },
-                                    updateQuestionFn = { question -> newFlashCardViewModel.updateQuestion(question) },
+                                    updateAnswerOptionsFn = { index, newAnswerText, isCorrect -> newFlashCardViewModel.updateAnswerOptions( index, newAnswerText, isCorrect ) },
+                                    updateQuestionFn = { question -> newFlashCardViewModel.updateQuestion( question ) },
                                     addAnswerOptionFn = { newOption -> newFlashCardViewModel.addAnswerOption( newOption ) },
                                     fetchAnswerOptionsFn = { newFlashCardViewModel.fetchAnswerOptions() },
+                                    updateCorrectAnswerFn = { correctAnswer -> newFlashCardViewModel.updateCorrectAnswer( correctAnswer ) },
+                                    setCorrectAnswerFalseFn = { index -> newFlashCardViewModel.setCorrectAnswerFalse( index ) },
                                     navController = navController
                                 )
+                                newFlashCardViewModel.updateQuestion("")
+                                newFlashCardViewModel.refreshAnswerOptions()
                             }
                             composable("ViewFlashCards") {
                                 FlashCardList(navController = navController, flashCardViewModel = flashCardViewModel)

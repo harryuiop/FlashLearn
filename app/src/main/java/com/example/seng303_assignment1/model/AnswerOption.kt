@@ -2,5 +2,5 @@ package com.example.seng303_assignment1.model
 
 data class AnswerOption(
    val answerText: String,
-   val isCorrect: Boolean
+   var isCorrect: Boolean
 )

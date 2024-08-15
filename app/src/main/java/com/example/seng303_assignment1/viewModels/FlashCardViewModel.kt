@@ -45,8 +45,7 @@ class FlashCardViewModel(
         val newFlashCard = FlashCard(
             id = generateFlashCardId(),
             question = question,
-            answerOptions = answerOptions,
-            correctAnswers = answerOptions.filter { it.isCorrect }
+            answerOptions = answerOptions
         )
 
         flashCardStorage.insert(newFlashCard).catch { Log.e("NOTE_VIEW_MODEL", "Could not insert note") }
