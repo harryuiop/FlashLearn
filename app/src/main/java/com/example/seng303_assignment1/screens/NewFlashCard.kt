@@ -31,9 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavController
 import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +45,7 @@ fun NewFlashCard(
     updateQuestionFn: (String) -> Unit,
     fetchAnswerOptionsFn: () -> List<AnswerOption>,
     addAnswerOptionFn: (AnswerOption) -> Unit,
-    flashCardViewModel: FlashCardViewModel
+    navController: NavController
     ) {
     val context = LocalContext.current
     var checked by remember { mutableStateOf(false) }
@@ -143,6 +143,7 @@ fun NewFlashCard(
 
                 if (!hasEmptyAnswer) {
                     createFlashCardFn(fetchQuestionFn(), answerOptions)
+                    navController.navigate("Home")
                 } else {
                     showErrorDialog = true
                 }

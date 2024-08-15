@@ -35,6 +35,7 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
+import com.example.seng303_assignment1.screens.FlashCardList
 import com.example.seng303_assignment1.screens.NewFlashCard
 import com.example.seng303_assignment1.ui.theme.Seng303assignment1Theme
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
@@ -86,8 +87,11 @@ class MainActivity : ComponentActivity() {
                                     updateQuestionFn = { question -> newFlashCardViewModel.updateQuestion(question) },
                                     addAnswerOptionFn = { newOption -> newFlashCardViewModel.addAnswerOption( newOption ) },
                                     fetchAnswerOptionsFn = { newFlashCardViewModel.fetchAnswerOptions() },
-                                    flashCardViewModel = flashCardViewModel
+                                    navController = navController
                                 )
+                            }
+                            composable("ViewFlashCards") {
+                                FlashCardList(navController = navController, flashCardViewModel = flashCardViewModel)
                             }
                         }
                     }
@@ -107,7 +111,7 @@ fun Home(navController: NavController, isDarkTheme: Boolean, onToggleTheme: () -
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { navController.navigate("") }) {
+        Button(onClick = { navController.navigate("ViewFlashCards") }) {
             Text("View Flash Cards")
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
             Icon(

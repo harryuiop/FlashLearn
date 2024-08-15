@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.seng303_assignment1.datastore.Storage
 import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
@@ -26,7 +27,6 @@ class FlashCardViewModel(
 
     private val _selectedFlashCard = MutableStateFlow<FlashCard?>(null)
     val selectedNote: StateFlow<FlashCard?> = _selectedFlashCard
-
 
     fun loadDefaultFlashCardIfNoneExist() = viewModelScope.launch {
         val currentNotes = flashCardStorage.getAll().first()
@@ -55,12 +55,23 @@ class FlashCardViewModel(
             .collect { _flashCards.emit(it) }
     }
 
-    suspend fun getAllFlashCards(): List<FlashCard> {
-        return try {
-            flashCardStorage.getAll().first()
-        } catch (e: Exception) {
-            Log.e("FLASH_CARD_VIEW_MODEL", "Error fetching flash cards: ${e.message}")
-            emptyList()
+     fun getAllFlashCards() {
+         viewModelScope.launch {
+             flashCardStorage.getAll().catch { Log.e("NOTE_VIEW_MODEL", it.toString()) }
+                 .collect { _flashCards.emit(it) }
+         }
+     }
+
+    fun deleteFlashCard(id: Int) {
+        viewModelScope.launch {
+            flashCardStorage.delete(identifier = id).catch { Log.e("NOTE_VIEW_MODEL", it.toString()) }
+                .collect { result ->
+                    if (result != -1) {
+                        _flashCards.emit(flashCardStorage.getAll().first())
+                    } else {
+                        Log.e("NOTE_VIEW_MODEL", "Delete operation failed")
+                    }
+                }
         }
     }
 
