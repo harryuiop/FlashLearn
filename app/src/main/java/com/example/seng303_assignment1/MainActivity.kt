@@ -32,12 +32,17 @@ import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.navArgument
+import com.example.seng303_assignment1.screens.EditFlashCard
 import com.example.seng303_assignment1.screens.FlashCardList
 import com.example.seng303_assignment1.screens.NewFlashCard
 import com.example.seng303_assignment1.ui.theme.Seng303assignment1Theme
+import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel as koinViewModel
@@ -46,6 +51,7 @@ class MainActivity : ComponentActivity() {
 
     private val flashCardViewModel: FlashCardViewModel by koinViewModel()
     private val newFlashCardViewModel: NewFlashCardViewModel by koinViewModel()
+    private val editFlashCardViewModel: EditFlashCardViewModel by koinViewModel()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,19 +87,30 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("NewFlashCard") {
                                 NewFlashCard(
-                                    createFlashCardFn = { question, answerOptions -> flashCardViewModel.createFlashCard( question, answerOptions ) },
-                                    fetchQuestionFn = { newFlashCardViewModel.fetchQuestion() },
-                                    updateAnswerOptionsFn = { index, newAnswerText, isCorrect -> newFlashCardViewModel.updateAnswerOptions( index, newAnswerText, isCorrect ) },
-                                    updateQuestionFn = { question -> newFlashCardViewModel.updateQuestion( question ) },
-                                    addAnswerOptionFn = { newOption -> newFlashCardViewModel.addAnswerOption( newOption ) },
-                                    fetchAnswerOptionsFn = { newFlashCardViewModel.fetchAnswerOptions() },
-                                    updateCorrectAnswerFn = { correctAnswer -> newFlashCardViewModel.updateCorrectAnswer( correctAnswer ) },
-                                    setCorrectAnswerFalseFn = { index -> newFlashCardViewModel.setCorrectAnswerFalse( index ) },
-                                    navController = navController
+                                    navController = navController,
+                                    flashCardViewModel = flashCardViewModel,
+                                    newFlashCardViewModel = newFlashCardViewModel
                                 )
                                 newFlashCardViewModel.updateQuestion("")
                                 newFlashCardViewModel.refreshAnswerOptions()
                             }
+                            composable("EditFlashCard/{flashCardId}", arguments = listOf(navArgument("flashCardId") {
+                                type = NavType.StringType
+                            })
+                            ){ backStackEntry ->
+                                val flashCardId = backStackEntry.arguments?.getString("flashCardId")
+                                flashCardId?.let { flashCardIdParam: String ->
+                                    EditFlashCard(
+                                        navController = navController,
+                                        flashCardIdParam = flashCardIdParam,
+                                        flashCardViewModel = flashCardViewModel,
+                                        editFlashCardViewModel = editFlashCardViewModel
+                                    )
+                                }
+                                newFlashCardViewModel.updateQuestion("")
+                                newFlashCardViewModel.refreshAnswerOptions()
+                            }
+
                             composable("ViewFlashCards") {
                                 FlashCardList(navController = navController, flashCardViewModel = flashCardViewModel)
                             }

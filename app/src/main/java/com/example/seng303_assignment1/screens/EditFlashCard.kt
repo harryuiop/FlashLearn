@@ -24,11 +24,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,21 +36,36 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.seng303_assignment1.model.AnswerOption
+import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
-import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
-
+import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
+import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewFlashCard(
+fun EditFlashCard(
     navController: NavController,
+    flashCardIdParam: String,
     flashCardViewModel: FlashCardViewModel,
-    newFlashCardViewModel: NewFlashCardViewModel
+    editFlashCardViewModel: EditFlashCardViewModel
 ) {
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var selectedAnswerIndex by remember { mutableStateOf(-1) }
     val scrollState = rememberScrollState()
+
+    val flashCardId = flashCardIdParam.toIntOrNull()
+    val flashCardState by flashCardViewModel.selectedFlashCard.collectAsState(null)
+    val flashCard: FlashCard? = flashCardState
+
+    LaunchedEffect(flashCard) {
+        if (flashCard == null) {
+            flashCardViewModel.getFlashCardById(flashCardId)
+        } else {
+            editFlashCardViewModel.setDefaultValues(flashCard)
+            selectedAnswerIndex = flashCard.answerOptions.indexOfFirst { it.isCorrect }
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,7 +80,7 @@ fun NewFlashCard(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "Create Question",
+                "Update Question",
                 style = TextStyle(
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
@@ -75,16 +89,17 @@ fun NewFlashCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            OutlinedTextField(
-                value = newFlashCardViewModel.fetchQuestion(),
-                onValueChange = { newFlashCardViewModel.updateQuestion(it) },
-                label = { Text("Question") },
-                modifier = Modifier.fillMaxWidth()
-            )
+            flashCard?.let {
+                OutlinedTextField(
+                    value = editFlashCardViewModel.fetchQuestion(),
+                    onValueChange = { editFlashCardViewModel.updateQuestion(it) },
+                    label = { Text("Question") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            newFlashCardViewModel.fetchAnswerOptions().forEachIndexed { index, answer ->
+            editFlashCardViewModel.fetchAnswerOptions().forEachIndexed { index, answer ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -95,16 +110,16 @@ fun NewFlashCard(
                         onCheckedChange = { isChecked ->
                             if (isChecked) {
                                 selectedAnswerIndex = index
-                                newFlashCardViewModel.updateCorrectAnswer(newFlashCardViewModel.fetchAnswerOptions()[index])
+                                editFlashCardViewModel.updateCorrectAnswer(editFlashCardViewModel.fetchAnswerOptions()[index])
 
-                                for (nums in 0..<newFlashCardViewModel.fetchAnswerOptions().size) {
-                                    if (nums != index) {
-                                        newFlashCardViewModel.setCorrectAnswerFalse(nums)
+                                editFlashCardViewModel.fetchAnswerOptions().forEachIndexed { i, _ ->
+                                    if (i != index) {
+                                        editFlashCardViewModel.setCorrectAnswerFalse(i)
                                     }
                                 }
                             } else if (selectedAnswerIndex == index) {
                                 selectedAnswerIndex = -1
-                                newFlashCardViewModel.setCorrectAnswerFalse(index)
+                                editFlashCardViewModel.setCorrectAnswerFalse(index)
                             }
                         }
                     )
@@ -112,7 +127,7 @@ fun NewFlashCard(
                     OutlinedTextField(
                         value = answer.answerText,
                         onValueChange = { newAnswer ->
-                            newFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
+                            editFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
                         },
                         label = { Text("Answer option") },
                         modifier = Modifier.weight(1f)
@@ -126,7 +141,7 @@ fun NewFlashCard(
 
             Button(
                 onClick = {
-                    newFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+                    editFlashCardViewModel.addAnswerOption(AnswerOption("", false))
                 }
             ) {
                 Icon(
@@ -138,8 +153,8 @@ fun NewFlashCard(
 
         Button(
             onClick = {
-                val answerOptions = newFlashCardViewModel.fetchAnswerOptions()
-                val question = newFlashCardViewModel.fetchAnswerOptions()
+                val answerOptions = editFlashCardViewModel.fetchAnswerOptions()
+                val question = editFlashCardViewModel.fetchAnswerOptions()
 
                 var hasEmptyAnswer = false
                 var choosenAnswer = false
@@ -169,7 +184,15 @@ fun NewFlashCard(
                 }
 
                 if (!hasEmptyAnswer) {
-                    flashCardViewModel.createFlashCard(newFlashCardViewModel.fetchQuestion(), answerOptions)
+                    flashCard?.let {
+                        flashCardViewModel.editFlashCard(flashCardIdParam.toInt(),
+                            FlashCard(
+                                flashCardViewModel.generateFlashCardId(),
+                                editFlashCardViewModel.fetchQuestion(),
+                                editFlashCardViewModel.fetchAnswerOptions()
+                            )
+                        )
+                    }
                     navController.navigate("ViewFlashCards")
                 } else {
                     showErrorDialog = true
@@ -177,7 +200,7 @@ fun NewFlashCard(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Save and return")
+            Text("Update Question")
         }
 
         if (showErrorDialog) {

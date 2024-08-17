@@ -36,7 +36,6 @@ import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 fun FlashCardList(navController: NavController, flashCardViewModel: FlashCardViewModel) {
     flashCardViewModel.getAllFlashCards()
     val flashCards: List<FlashCard> by flashCardViewModel.flashCard.collectAsState(emptyList())
-    Log.e("g", flashCards.toString())
     LazyColumn {
         items(flashCards) { flashCardItem ->
             FlashCardItem(navController = navController, flashCard = flashCardItem, flashCardViewModel)
@@ -76,7 +75,7 @@ fun FlashCardItem(navController: NavController, flashCard: FlashCard, flashCardV
             ) {
                 Button(
                     onClick = {
-
+                        navController.navigate("EditFlashCard/${flashCard.id}")
                     },
                     modifier = Modifier
                         .offset((-10).dp)

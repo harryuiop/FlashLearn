@@ -26,7 +26,7 @@ class FlashCardViewModel(
     val flashCard: StateFlow<List<FlashCard>> get() = _flashCards
 
     private val _selectedFlashCard = MutableStateFlow<FlashCard?>(null)
-    val selectedNote: StateFlow<FlashCard?> = _selectedFlashCard
+    val selectedFlashCard: StateFlow<FlashCard?> = _selectedFlashCard
 
     fun loadDefaultFlashCardIfNoneExist() = viewModelScope.launch {
         val currentNotes = flashCardStorage.getAll().first()
@@ -37,6 +37,14 @@ class FlashCardViewModel(
                     Log.d("NOTE_VIEW_MODEL", "Default notes inserted successfully")
                     _flashCards.emit(FlashCard.getFlashCards())
                 }
+        }
+    }
+
+    fun getFlashCardById(flashCardId: Int?) = viewModelScope.launch {
+        if (flashCardId != null) {
+            _selectedFlashCard.value = flashCardStorage.get { it.getIdentifier() == flashCardId }.first()
+        } else {
+            _selectedFlashCard.value = null
         }
     }
 
@@ -53,6 +61,16 @@ class FlashCardViewModel(
         flashCardStorage.getAll().catch { Log.e("NOTE_VIEW_MODEL", it.toString()) }
             .collect { _flashCards.emit(it) }
     }
+
+    fun editFlashCard(flashCardId: Int?, flashCard: FlashCard) =
+        viewModelScope.launch {
+            if (flashCardId != null) {
+                flashCardStorage.edit(flashCardId, flashCard).collect()
+                flashCardStorage.getAll().catch { Log.e("NOTE_VIEW_MODEL", it.toString()) }
+                    .collect { _flashCards.emit(it) }
+            }
+
+        }
 
      fun getAllFlashCards() {
          viewModelScope.launch {
@@ -74,7 +92,7 @@ class FlashCardViewModel(
         }
     }
 
-    private fun generateFlashCardId(): Int {
+     fun generateFlashCardId(): Int {
         val randomInt = Random.nextInt(1, 1000)
         return randomInt
     }

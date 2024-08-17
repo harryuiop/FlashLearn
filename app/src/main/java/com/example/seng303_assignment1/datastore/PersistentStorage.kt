@@ -23,7 +23,6 @@ class PersistentStorage<T>(
         return flow {
             val cachedDataClone = getAll().first().toMutableList()
             cachedDataClone.add(data)
-            Log.e("Storage", "Inserting FlashCard")
             dataStore.edit {
                 val jsonString = gson.toJson(cachedDataClone, type)
                 it[preferenceKey] = jsonString
@@ -45,7 +44,6 @@ class PersistentStorage<T>(
     }
 
     override fun getAll(): Flow<List<T>> {
-        Log.e("Storage", "Retrieving FlashCard")
         return dataStore.data.map { preferences ->
             val jsonString = preferences[preferenceKey] ?: EMPTY_JSON_STRING
             val elements = gson.fromJson<List<T>>(jsonString, type)

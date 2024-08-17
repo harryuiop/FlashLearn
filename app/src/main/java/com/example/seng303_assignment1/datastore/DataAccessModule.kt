@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.seng303_assignment1.model.FlashCard
+import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
 import com.google.gson.Gson
@@ -40,5 +41,9 @@ val dataAccessModule = module {
 
     viewModel {
         NewFlashCardViewModel()
+    }
+
+    viewModel {
+        EditFlashCardViewModel()
     }
 }

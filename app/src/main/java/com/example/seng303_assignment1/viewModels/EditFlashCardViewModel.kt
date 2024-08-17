@@ -7,14 +7,14 @@ import androidx.lifecycle.ViewModel
 import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
 
-
-class NewFlashCardViewModel() : ViewModel() {
-
+class EditFlashCardViewModel: ViewModel() {
     var question by mutableStateOf("")
         private set
 
-    var answerOptions by mutableStateOf(listOf(AnswerOption("", false),
-        AnswerOption("", false), AnswerOption("", false)))
+    var answerOptions by mutableStateOf(listOf(
+        AnswerOption("", false),
+        AnswerOption("", false), AnswerOption("", false)
+    ))
         private set
 
     fun updateQuestion(newQuestion: String) {
@@ -57,8 +57,10 @@ class NewFlashCardViewModel() : ViewModel() {
     }
 
     fun refreshAnswerOptions() {
-        answerOptions = listOf(AnswerOption("", false),
-            AnswerOption("", false), AnswerOption("", false))
+        answerOptions = listOf(
+            AnswerOption("", false),
+            AnswerOption("", false), AnswerOption("", false)
+        )
     }
 
     fun setDefaultValues(selectedFlashCard: FlashCard?) {
@@ -68,5 +70,3 @@ class NewFlashCardViewModel() : ViewModel() {
         }
     }
 }
-
-
