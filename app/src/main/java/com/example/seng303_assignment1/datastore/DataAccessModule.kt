@@ -14,9 +14,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.FlowPreview
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.scope.get
 import org.koin.dsl.module
-
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "flashcard_data")
 

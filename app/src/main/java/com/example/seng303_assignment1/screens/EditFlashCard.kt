@@ -1,6 +1,5 @@
 package com.example.seng303_assignment1.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +37,6 @@ import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
-import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +154,7 @@ fun EditFlashCard(
                 val question = editFlashCardViewModel.fetchAnswerOptions()
 
                 var hasEmptyAnswer = false
-                var choosenAnswer = false
+                var chosenAnswer = false
 
                 for (answer in answerOptions) {
                     if (answer.answerText.isEmpty()) {
@@ -174,11 +171,11 @@ fun EditFlashCard(
 
                 answerOptions.forEach { answer ->
                     if (answer.isCorrect) {
-                        choosenAnswer = true
+                        chosenAnswer = true
                     }
                 }
 
-                if (!choosenAnswer) {
+                if (!chosenAnswer) {
                     hasEmptyAnswer = true
                     errorMessage = "Please confirm a correct answer"
                 }
