@@ -34,6 +34,10 @@ class EditFlashCardViewModel: ViewModel() {
         }
     }
 
+    fun removeAnswerOption() {
+        answerOptions = answerOptions.dropLast(1)
+    }
+
     fun setCorrectAnswerFalse(index: Int) {
         answerOptions[index].isCorrect = false
     }

@@ -1,6 +1,5 @@
 package com.example.seng303_assignment1.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,11 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -21,14 +22,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,7 +47,7 @@ fun NewFlashCard(
 ) {
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    var selectedAnswerIndex by remember { mutableStateOf(-1) }
+    var selectedAnswerIndex by remember { mutableIntStateOf(-1) }
     val scrollState = rememberScrollState()
 
     Column(
@@ -122,16 +120,34 @@ fun NewFlashCard(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    newFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+            Row {
+                Button(
+                    onClick = {
+                        newFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+                    },
+                    modifier = Modifier.offset((-5).dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Add,
+                        contentDescription = "Add Answer Option"
+                    )
                 }
-            ) {
-                Icon(
-                    Icons.Rounded.Add,
-                    contentDescription = "Add Answer Option"
-                )
+                Button(
+                    onClick = {
+                        if (newFlashCardViewModel.fetchAnswerOptions().size > 3) {
+                            newFlashCardViewModel.removeAnswerOption()
+                        } else {
+                            showErrorDialog = true
+                            errorMessage = "Question must contain at least three options"
+                        }
+                    },
+                    modifier = Modifier.offset(5.dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Delete,
+                        contentDescription = "Remove Answer Option"
+                    )
+                }
             }
         }
 
@@ -141,7 +157,7 @@ fun NewFlashCard(
                 val question = newFlashCardViewModel.fetchAnswerOptions()
 
                 var hasEmptyAnswer = false
-                var choosenAnswer = false
+                var chosenAnswer = false
 
                 for (answer in answerOptions) {
                     if (answer.answerText.isEmpty()) {
@@ -158,11 +174,11 @@ fun NewFlashCard(
 
                 answerOptions.forEach { answer ->
                     if (answer.isCorrect) {
-                        choosenAnswer = true
+                        chosenAnswer = true
                     }
                 }
 
-                if (!choosenAnswer) {
+                if (!chosenAnswer) {
                     hasEmptyAnswer = true
                     errorMessage = "Please confirm a correct answer"
                 }

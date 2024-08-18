@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -136,15 +138,34 @@ fun EditFlashCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
-                    editFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+            Row {
+                Button(
+                    onClick = {
+                        editFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+                    },
+                    modifier = Modifier.offset((-5).dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Add,
+                        contentDescription = "Add Answer Option"
+                    )
                 }
-            ) {
-                Icon(
-                    Icons.Rounded.Add,
-                    contentDescription = "Add Answer Option"
-                )
+                Button(
+                    onClick = {
+                        if (editFlashCardViewModel.fetchAnswerOptions().size > 3) {
+                            editFlashCardViewModel.removeAnswerOption()
+                        } else {
+                            showErrorDialog = true
+                            errorMessage = "Question must contain at least three options"
+                        }
+                    },
+                    modifier = Modifier.offset(5.dp)
+                ) {
+                    Icon(
+                        Icons.Rounded.Delete,
+                        contentDescription = "Remove Answer Option"
+                    )
+                }
             }
         }
 

@@ -1,5 +1,7 @@
 package com.example.seng303_assignment1.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.seng303_assignment1.model.FlashCard
@@ -45,6 +48,7 @@ fun FlashCardList(navController: NavController, flashCardViewModel: FlashCardVie
 @Composable
 fun FlashCardItem(navController: NavController, flashCard: FlashCard, flashCardViewModel: FlashCardViewModel) {
     var openDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Row(
         modifier = Modifier
@@ -85,7 +89,13 @@ fun FlashCardItem(navController: NavController, flashCard: FlashCard, flashCardV
                     )
                 }
                 Button(
-                    onClick = {  }
+                    onClick = {
+                        val searchUrl = "https://www.google.com/search?q=${Uri.encode(flashCard.question)}"
+                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(searchUrl)
+                        }
+                        context.startActivity(intent)
+                    }
                 ) {
                     Icon(
                         Icons.Rounded.Search,

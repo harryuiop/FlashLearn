@@ -46,6 +46,10 @@ class NewFlashCardViewModel() : ViewModel() {
         answerOptions = answerOptions + newOption
     }
 
+    fun removeAnswerOption() {
+        answerOptions = answerOptions.dropLast(1)
+    }
+
     fun fetchAnswerOptions(): List<AnswerOption> {
         return answerOptions
     }
