@@ -9,6 +9,7 @@ import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
+import com.example.seng303_assignment1.viewModels.PlayViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.FlowPreview
@@ -36,12 +37,13 @@ val dataAccessModule = module {
             flashCardStorage = get()
         )
     }
-
     viewModel {
         NewFlashCardViewModel()
     }
-
     viewModel {
         EditFlashCardViewModel()
+    }
+    viewModel {
+        PlayViewModel()
     }
 }

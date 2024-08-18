@@ -5,8 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.seng303_assignment1.model.AnswerOption
-import com.example.seng303_assignment1.model.FlashCard
-
 
 class NewFlashCardViewModel() : ViewModel() {
 
@@ -59,13 +57,6 @@ class NewFlashCardViewModel() : ViewModel() {
     fun refreshAnswerOptions() {
         answerOptions = listOf(AnswerOption("", false),
             AnswerOption("", false), AnswerOption("", false))
-    }
-
-    fun setDefaultValues(selectedFlashCard: FlashCard?) {
-        selectedFlashCard?.let {
-            question = it.question
-            answerOptions = it.answerOptions
-        }
     }
 }
 

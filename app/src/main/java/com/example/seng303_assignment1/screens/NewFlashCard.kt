@@ -40,7 +40,6 @@ import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewFlashCard(

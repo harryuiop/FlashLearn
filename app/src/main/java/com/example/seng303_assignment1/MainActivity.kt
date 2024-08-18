@@ -39,12 +39,15 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navArgument
 import com.example.seng303_assignment1.screens.EditFlashCard
+import com.example.seng303_assignment1.screens.EndGame
 import com.example.seng303_assignment1.screens.FlashCardList
 import com.example.seng303_assignment1.screens.NewFlashCard
+import com.example.seng303_assignment1.screens.Play
 import com.example.seng303_assignment1.ui.theme.Seng303assignment1Theme
 import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
+import com.example.seng303_assignment1.viewModels.PlayViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel as koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -52,6 +55,7 @@ class MainActivity : ComponentActivity() {
     private val flashCardViewModel: FlashCardViewModel by koinViewModel()
     private val newFlashCardViewModel: NewFlashCardViewModel by koinViewModel()
     private val editFlashCardViewModel: EditFlashCardViewModel by koinViewModel()
+    private val playViewModel: PlayViewModel by koinViewModel()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +81,6 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {
                     Box(modifier = Modifier.padding(it)) {
-
                         NavHost(navController = navController, startDestination = "Home") {
                             composable("Home") {
                                 Home(navController = navController, isDarkTheme, onToggleTheme = {
@@ -107,9 +110,21 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             }
-
                             composable("ViewFlashCards") {
                                 FlashCardList(navController = navController, flashCardViewModel = flashCardViewModel)
+                            }
+                            composable("Play") {
+                                Play(
+                                    navController = navController,
+                                    flashCardViewModel = flashCardViewModel,
+                                    playViewModel = playViewModel
+                                )
+                            }
+                            composable("EndGame") {
+                                EndGame(
+                                    playViewModel = playViewModel,
+                                    navController = navController
+                                )
                             }
                         }
                     }
@@ -147,7 +162,7 @@ fun Home(navController: NavController, isDarkTheme: Boolean, onToggleTheme: () -
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { navController.navigate("") }) {
+        Button(onClick = { navController.navigate("Play") }) {
             Text("Play Flash Cards")
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
             Icon(
