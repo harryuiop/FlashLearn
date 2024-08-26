@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
 import com.example.seng303_assignment1.model.AnswerOption
+import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
 
@@ -49,6 +51,8 @@ fun NewFlashCard(
     var errorMessage by remember { mutableStateOf("") }
     var selectedAnswerIndex by remember { mutableIntStateOf(-1) }
     val scrollState = rememberScrollState()
+    flashCardViewModel.getAllFlashCards()
+    val flashCards: List<FlashCard> by flashCardViewModel.flashCard.collectAsState(emptyList())
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -154,7 +158,7 @@ fun NewFlashCard(
         Button(
             onClick = {
                 val answerOptions = newFlashCardViewModel.fetchAnswerOptions()
-                val question = newFlashCardViewModel.fetchAnswerOptions()
+                val question = newFlashCardViewModel.fetchQuestion()
 
                 var hasEmptyAnswer = false
                 var chosenAnswer = false
@@ -181,6 +185,13 @@ fun NewFlashCard(
                 if (!chosenAnswer) {
                     hasEmptyAnswer = true
                     errorMessage = "Please confirm a correct answer"
+                }
+
+                flashCards.forEach{ card ->
+                    if (card.question == question) {
+                        hasEmptyAnswer = true
+                        errorMessage = "Flash card was this question already created"
+                    }
                 }
 
                 if (!hasEmptyAnswer) {

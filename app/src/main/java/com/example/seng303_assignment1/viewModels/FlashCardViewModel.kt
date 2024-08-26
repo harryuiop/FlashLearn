@@ -51,7 +51,6 @@ class FlashCardViewModel(
             question = question,
             answerOptions = answerOptions
         )
-
         flashCardStorage.insert(newFlashCard).catch { Log.e("NOTE_VIEW_MODEL", "Could not insert note") }
             .collect()
         flashCardStorage.getAll().catch { Log.e("NOTE_VIEW_MODEL", it.toString()) }
@@ -68,12 +67,12 @@ class FlashCardViewModel(
 
         }
 
-     fun getAllFlashCards() {
+    fun getAllFlashCards() {
          viewModelScope.launch {
              flashCardStorage.getAll().catch { Log.e("NOTE_VIEW_MODEL", it.toString()) }
                  .collect { _flashCards.emit(it) }
          }
-     }
+    }
 
     fun deleteFlashCard(id: Int) {
         viewModelScope.launch {

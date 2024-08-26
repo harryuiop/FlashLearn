@@ -12,13 +12,7 @@ data class FlashCard(
 
     companion object {
         fun getFlashCards(): List<FlashCard> {
-            return listOf(
-                FlashCard(
-                    id = 1,
-                    question = "test",
-                    answerOptions = listOf(AnswerOption("test2", isCorrect = true)),
-                )
-            )
+            return listOf()
         }
     }
 }

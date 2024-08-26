@@ -4,7 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -38,9 +40,29 @@ import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 fun FlashCardList(navController: NavController, flashCardViewModel: FlashCardViewModel) {
     flashCardViewModel.getAllFlashCards()
     val flashCards: List<FlashCard> by flashCardViewModel.flashCard.collectAsState(emptyList())
-    LazyColumn {
-        items(flashCards) { flashCardItem ->
-            FlashCardItem(navController = navController, flashCard = flashCardItem, flashCardViewModel)
+    if (flashCards.isNotEmpty()) {
+        LazyColumn {
+            items(flashCards) { flashCardItem ->
+                FlashCardItem(navController = navController, flashCard = flashCardItem, flashCardViewModel)
+            }
+        }
+    } else {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "No Flashcards Created!",
+                    modifier = Modifier.offset(0.dp, -(35).dp))
+                Text(text = "Would you like to create one?")
+                Button(onClick = { navController.navigate("NewFlashCard") }) {
+                    Text("Create Flash Card")
+                }
+            }
         }
     }
 }
@@ -49,7 +71,7 @@ fun FlashCardList(navController: NavController, flashCardViewModel: FlashCardVie
 fun FlashCardItem(navController: NavController, flashCard: FlashCard, flashCardViewModel: FlashCardViewModel) {
     var openDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
