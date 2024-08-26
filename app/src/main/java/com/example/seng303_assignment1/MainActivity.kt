@@ -1,6 +1,8 @@
 package com.example.seng303_assignment1
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +34,7 @@ import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
@@ -56,6 +59,7 @@ class MainActivity : ComponentActivity() {
     private val editFlashCardViewModel: EditFlashCardViewModel by koinViewModel()
     private val playViewModel: PlayViewModel by koinViewModel()
 
+    @SuppressLint("RestrictedApi")
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,6 +80,7 @@ class MainActivity : ComponentActivity() {
                                         "EditFlashCard" -> navController.navigate("ViewFlashCards")
                                         else -> navController.navigate("Home")
                                     }
+                                    playViewModel.resetGameResults()
                                 }) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -124,6 +129,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("Play") {
                                 previousScreen = "Home"
+//                                if (navController.currentBackStack.collectAsState().value.last().destination.route != "Play") {
+                                playViewModel.incrementReRenderIndex()
+//                                }
                                 Play(
                                     navController = navController,
                                     flashCardViewModel = flashCardViewModel,

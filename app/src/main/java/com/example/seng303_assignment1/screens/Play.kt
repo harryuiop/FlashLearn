@@ -1,5 +1,6 @@
 package com.example.seng303_assignment1.screens
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import com.example.seng303_assignment1.model.GameRoundResult
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.PlayViewModel
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun Play(
     navController: NavController,
@@ -25,15 +27,20 @@ fun Play(
 ) {
     flashCardViewModel.getAllFlashCards()
     val flashCards: List<FlashCard> by flashCardViewModel.flashCard.collectAsState(emptyList())
-    var index by remember { mutableIntStateOf(0) }
-    var selectedAnswerIndex by remember { mutableStateOf(-1) }
+    val reRenderIndex by playViewModel.reRenderIndex.collectAsState()
+    val selectedAnswerIndex by playViewModel.selectedAnswerIndex.collectAsState()
+    val shuffledFlashCards by playViewModel.shuffledFlashCards.collectAsState()
+    val index by playViewModel.index.collectAsState()
+
     var showErrorDialog by remember { mutableStateOf(false) }
-    var shuffledFlashCards by remember { mutableStateOf(emptyList<FlashCard>()) }
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
-        playViewModel.resetGameResults()
-        shuffledFlashCards = flashCards.shuffled()
+//    val top = navController.currentBackStack.collectAsState().value.last().destination.route
+//    Log.e("val", top.toString())
+
+    LaunchedEffect(reRenderIndex) {
+//        playViewModel.resetGameResults()
+        playViewModel.setShuffledFlashCards(flashCards.shuffled())
     }
 
     if (shuffledFlashCards.isNotEmpty()) {
@@ -70,9 +77,9 @@ fun Play(
                             checked = selectedAnswerIndex == optionIndex,
                             onCheckedChange = { isChecked ->
                                 if (isChecked) {
-                                    selectedAnswerIndex = optionIndex
+                                    playViewModel.updateSelectedAnswerIndex(optionIndex)
                                 } else if (selectedAnswerIndex == optionIndex) {
-                                    selectedAnswerIndex = -1
+                                    playViewModel.updateSelectedAnswerIndex(-1)
                                 }
                             }
                         )
@@ -102,11 +109,11 @@ fun Play(
                                 )
                                 Toast.makeText(context, "Incorrect", Toast.LENGTH_SHORT).show()
                             }
-                            selectedAnswerIndex = -1
+                            playViewModel.updateSelectedAnswerIndex(-1)
                             if (index + 1 == shuffledFlashCards.size) {
                                 navController.navigate("EndGame")
                             } else {
-                                index++
+                                playViewModel.incrementIndex()
                             }
                         } else {
                             navController.navigate("EndGame")

@@ -65,7 +65,6 @@ class EditFlashCardViewModel: ViewModel() {
     fun addAnswerOption() {
         val newList = _answerOptions.value + AnswerOption("", false)
         _answerOptions.value = newList
-        Log.e("list", newList.toString())
     }
 
     fun removeAnswerOption() {
