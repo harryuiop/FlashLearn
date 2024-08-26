@@ -28,14 +28,15 @@ fun Play(
     var index by remember { mutableIntStateOf(0) }
     var selectedAnswerIndex by remember { mutableStateOf(-1) }
     var showErrorDialog by remember { mutableStateOf(false) }
+    var shuffledFlashCards by remember { mutableStateOf(emptyList<FlashCard>()) }
     val context = LocalContext.current
-
-
+    
     LaunchedEffect(Unit) {
         playViewModel.resetGameResults()
+        shuffledFlashCards = flashCards.shuffled()
     }
 
-    if (flashCards.isNotEmpty()) {
+    if (shuffledFlashCards.isNotEmpty()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -43,7 +44,6 @@ fun Play(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            // glpat-zTUPqshFNtjv3Kg1A2dD
             Row(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
@@ -51,7 +51,7 @@ fun Play(
                     .padding(10.dp)
             ) {
                 Text(
-                    text = flashCards[index].question,
+                    text = shuffledFlashCards[index].question,
                     modifier = Modifier.padding(16.dp)
                 )
             }
@@ -60,7 +60,7 @@ fun Play(
                 modifier = Modifier
                     .padding(start = 20.dp)
             ) {
-                flashCards[index].answerOptions.forEachIndexed { optionIndex, option ->
+                shuffledFlashCards[index].answerOptions.forEachIndexed { optionIndex, option ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start,
@@ -85,25 +85,25 @@ fun Play(
             Button(
                 onClick = {
                     if (selectedAnswerIndex != -1) {
-                        if (index <= flashCards.size - 1) {
-                            if (flashCards[index].answerOptions[selectedAnswerIndex].isCorrect) {
+                        if (index <= shuffledFlashCards.size - 1) {
+                            if (shuffledFlashCards[index].answerOptions[selectedAnswerIndex].isCorrect) {
                                 playViewModel.incrementCorrectAnswersTotal()
                                 playViewModel.addToGameResults(
                                     GameRoundResult(
-                                        flashCards[index], true
+                                        shuffledFlashCards[index], true
                                     )
                                 )
                                 Toast.makeText(context, "Correct", Toast.LENGTH_SHORT).show()
                             } else {
                                 playViewModel.addToGameResults(
                                     GameRoundResult(
-                                        flashCards[index], false
+                                        shuffledFlashCards[index], false
                                     )
                                 )
                                 Toast.makeText(context, "Incorrect", Toast.LENGTH_SHORT).show()
                             }
                             selectedAnswerIndex = -1
-                            if (index + 1 == flashCards.size) {
+                            if (index + 1 == shuffledFlashCards.size) {
                                 navController.navigate("EndGame")
                             } else {
                                 index++
@@ -144,7 +144,7 @@ fun Play(
                     .padding(10.dp)
             ) {
                 Text(
-                    text = "Question: ${index + 1} / ${flashCards.size}",
+                    text = "Question: ${index + 1} / ${shuffledFlashCards.size}",
                     modifier = Modifier.padding(16.dp)
                 )
             }

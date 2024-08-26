@@ -1,6 +1,7 @@
 package com.example.seng303_assignment1
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +49,7 @@ import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.PlayViewModel
+import kotlinx.coroutines.flow.forEach
 import org.koin.androidx.viewmodel.ext.android.viewModel as koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -63,6 +65,8 @@ class MainActivity : ComponentActivity() {
         flashCardViewModel.loadDefaultFlashCardIfNoneExist()
         setContent {
             var isDarkTheme by remember { mutableStateOf(true) }
+            var previousScreen by remember { mutableStateOf<String?>(null) }
+
             Seng303assignment1Theme(darkTheme = isDarkTheme){
                 val navController = rememberNavController()
                 Scaffold(
@@ -70,7 +74,12 @@ class MainActivity : ComponentActivity() {
                         TopAppBar(
                             title = { Text("Flash Cards App") },
                             navigationIcon = {
-                                IconButton(onClick = { navController.popBackStack() }) {
+                                IconButton(onClick = {
+                                    when (previousScreen) {
+                                        "EditFlashCard" -> navController.navigate("ViewFlashCards")
+                                        else -> navController.navigate("Home")
+                                    }
+                                }) {
                                     Icon(
                                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                         contentDescription = "Back"
@@ -83,11 +92,13 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(it)) {
                         NavHost(navController = navController, startDestination = "Home") {
                             composable("Home") {
+                                previousScreen = null
                                 Home(navController = navController, isDarkTheme, onToggleTheme = {
                                     isDarkTheme = !isDarkTheme
                                 })
                             }
                             composable("NewFlashCard") {
+                                previousScreen = "Home"
                                 NewFlashCard(
                                     navController = navController,
                                     flashCardViewModel = flashCardViewModel,
@@ -100,6 +111,7 @@ class MainActivity : ComponentActivity() {
                                 type = NavType.StringType
                             })
                             ){ backStackEntry ->
+                                previousScreen = "EditFlashCard"
                                 val flashCardId = backStackEntry.arguments?.getString("flashCardId")
                                 flashCardId?.let { flashCardIdParam: String ->
                                     EditFlashCard(
@@ -111,9 +123,11 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                             composable("ViewFlashCards") {
+                                previousScreen = "Home"
                                 FlashCardList(navController = navController, flashCardViewModel = flashCardViewModel)
                             }
                             composable("Play") {
+                                previousScreen = "Home"
                                 Play(
                                     navController = navController,
                                     flashCardViewModel = flashCardViewModel,
@@ -121,6 +135,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable("EndGame") {
+                                previousScreen = "Play"
                                 EndGame(
                                     playViewModel = playViewModel,
                                     navController = navController

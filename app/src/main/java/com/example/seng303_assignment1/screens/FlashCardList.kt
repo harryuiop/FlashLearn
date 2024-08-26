@@ -40,28 +40,39 @@ import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 fun FlashCardList(navController: NavController, flashCardViewModel: FlashCardViewModel) {
     flashCardViewModel.getAllFlashCards()
     val flashCards: List<FlashCard> by flashCardViewModel.flashCard.collectAsState(emptyList())
-    if (flashCards.isNotEmpty()) {
-        LazyColumn {
-            items(flashCards) { flashCardItem ->
-                FlashCardItem(navController = navController, flashCard = flashCardItem, flashCardViewModel)
-            }
-        }
-    } else {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Button(
+            onClick = { navController.navigate("NewFlashCard") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
+            Text(text = "Create Flash Card")
+        }
+
+        if (flashCards.isNotEmpty()) {
+            LazyColumn {
+                items(flashCards) { flashCardItem ->
+                    FlashCardItem(navController = navController, flashCard = flashCardItem, flashCardViewModel)
+                }
+            }
+        } else {
             Column(
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "No Flashcards Created!",
-                    modifier = Modifier.offset(0.dp, -(35).dp))
-                Text(text = "Would you like to create one?")
-                Button(onClick = { navController.navigate("NewFlashCard") }) {
-                    Text("Create Flash Card")
-                }
+                Text(
+                    text = "No Flashcards Created!",
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Create one using the button above.",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
             }
         }
     }
@@ -80,7 +91,6 @@ fun FlashCardItem(navController: NavController, flashCard: FlashCard, flashCardV
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { navController.navigate("destination") }
         ) {
             Row(
                 modifier = Modifier

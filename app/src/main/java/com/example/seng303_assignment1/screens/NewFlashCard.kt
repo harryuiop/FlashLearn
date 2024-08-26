@@ -190,7 +190,7 @@ fun NewFlashCard(
                 flashCards.forEach{ card ->
                     if (card.question == question) {
                         hasEmptyAnswer = true
-                        errorMessage = "Flash card was this question already created"
+                        errorMessage = "Flash card with this question already created"
                     }
                 }
 
