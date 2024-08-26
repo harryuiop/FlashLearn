@@ -17,12 +17,12 @@ class NewFlashCardViewModel() : ViewModel() {
     private val _selectedAnswerIndex = MutableStateFlow(-1)
     val selectedAnswerIndex: StateFlow<Int> = _selectedAnswerIndex
 
-    fun updateQuestion(newQuestion: String) {
-        _question.value = newQuestion
-    }
-
     fun updateSelectedAnswerIndex(newIndex: Int) {
         _selectedAnswerIndex.value = newIndex
+    }
+
+    fun updateQuestion(newQuestion: String) {
+        _question.value = newQuestion
     }
 
     fun updateCorrectAnswer(inputtedCorrectAnswer: AnswerOption) {

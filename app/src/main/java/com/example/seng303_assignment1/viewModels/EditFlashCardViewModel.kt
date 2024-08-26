@@ -1,9 +1,6 @@
 package com.example.seng303_assignment1.viewModels
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
@@ -11,11 +8,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class EditFlashCardViewModel: ViewModel() {
-    private var _question = MutableStateFlow("")
+    private val _question = MutableStateFlow("")
     val question: StateFlow<String> = _question
 
-    private var _answerOptions = MutableStateFlow<List<AnswerOption>>(List(3) { AnswerOption("", false) })
+    private val _answerOptions = MutableStateFlow<List<AnswerOption>>(List(3) { AnswerOption("", false) })
     val answerOptions: StateFlow<List<AnswerOption>> = _answerOptions
+
+    private val _selectedAnswerIndex = MutableStateFlow(-1)
+    val selectedAnswerIndex: StateFlow<Int> = _selectedAnswerIndex
+
+    private val _reRenderIndex = MutableStateFlow(0)
+    val reRenderIndex: StateFlow<Int> = _reRenderIndex
+
+    fun incrementReRenderIndex() {
+        _reRenderIndex.value = reRenderIndex.value + 1
+    }
+
+    fun updateSelectedAnswerIndex(newIndex: Int) {
+        _selectedAnswerIndex.value = newIndex
+    }
 
     fun updateQuestion(newQuestion: String) {
         _question.value = newQuestion

@@ -50,21 +50,23 @@ fun EditFlashCard(
 ) {
     val question by editFlashCardViewModel.question.collectAsState()
     val answerOptions by editFlashCardViewModel.answerOptions.collectAsState()
+    val selectedAnswerIndex by editFlashCardViewModel.selectedAnswerIndex.collectAsState()
+    val reRenderIndex by editFlashCardViewModel.reRenderIndex.collectAsState()
+
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    var selectedAnswerIndex by remember { mutableStateOf(-1) }
     val scrollState = rememberScrollState()
 
     val flashCardId = flashCardIdParam.toIntOrNull()
     val flashCardState by flashCardViewModel.selectedFlashCard.collectAsState(null)
     val flashCard: FlashCard? = flashCardState
 
-    LaunchedEffect(flashCard) {
+    LaunchedEffect(reRenderIndex) {
         if (flashCard == null) {
             flashCardViewModel.getFlashCardById(flashCardId)
         } else {
             editFlashCardViewModel.setDefaultValues(flashCard)
-            selectedAnswerIndex = answerOptions.indexOfFirst { it.isCorrect }
+            editFlashCardViewModel.updateSelectedAnswerIndex(answerOptions.indexOfFirst { it.isCorrect })
         }
     }
 
@@ -110,7 +112,7 @@ fun EditFlashCard(
                         checked = selectedAnswerIndex == index,
                         onCheckedChange = { isChecked ->
                             if (isChecked) {
-                                selectedAnswerIndex = index
+                                editFlashCardViewModel.updateSelectedAnswerIndex(index)
                                 editFlashCardViewModel.updateCorrectAnswer(answerOptions[index])
 
                                 for (nums in 0..<editFlashCardViewModel.answerOptions.value.size) {
@@ -119,7 +121,7 @@ fun EditFlashCard(
                                     }
                                 }
                             } else if (selectedAnswerIndex == index) {
-                                selectedAnswerIndex = -1
+                                editFlashCardViewModel.updateSelectedAnswerIndex(-1)
                                 editFlashCardViewModel.setCorrectAnswerFalse(index)
                             }
                         }

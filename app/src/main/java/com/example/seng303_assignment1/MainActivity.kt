@@ -1,7 +1,6 @@
 package com.example.seng303_assignment1
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,7 +47,6 @@ import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
 import com.example.seng303_assignment1.viewModels.PlayViewModel
-import kotlinx.coroutines.flow.forEach
 import org.koin.androidx.viewmodel.ext.android.viewModel as koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -109,6 +106,7 @@ class MainActivity : ComponentActivity() {
                                 type = NavType.StringType
                             })
                             ){ backStackEntry ->
+                                editFlashCardViewModel.incrementReRenderIndex()
                                 previousScreen = "EditFlashCard"
                                 val flashCardId = backStackEntry.arguments?.getString("flashCardId")
                                 flashCardId?.let { flashCardIdParam: String ->

@@ -51,9 +51,10 @@ fun NewFlashCard(
 ) {
     val question by newFlashCardViewModel.question.collectAsState()
     val answerOptions by newFlashCardViewModel.answerOptions.collectAsState()
+    val selectedAnswerIndex by newFlashCardViewModel.selectedAnswerIndex.collectAsState()
+
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
-    var selectedAnswerIndex by remember { mutableIntStateOf(-1) }
     val scrollState = rememberScrollState()
 
     flashCardViewModel.getAllFlashCards()
@@ -100,7 +101,7 @@ fun NewFlashCard(
                         checked = selectedAnswerIndex == index,
                         onCheckedChange = { isChecked ->
                             if (isChecked) {
-                                selectedAnswerIndex = index
+                                newFlashCardViewModel.updateSelectedAnswerIndex(index)
                                 newFlashCardViewModel.updateCorrectAnswer(answerOptions[index])
 
                                 for (nums in 0..<newFlashCardViewModel.answerOptions.value.size) {
@@ -109,7 +110,7 @@ fun NewFlashCard(
                                     }
                                 }
                             } else if (selectedAnswerIndex == index) {
-                                selectedAnswerIndex = -1
+                                newFlashCardViewModel.updateSelectedAnswerIndex(-1)
                                 newFlashCardViewModel.setCorrectAnswerFalse(index)
                             }
                         }
