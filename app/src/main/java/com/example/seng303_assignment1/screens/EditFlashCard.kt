@@ -48,6 +48,8 @@ fun EditFlashCard(
     flashCardViewModel: FlashCardViewModel,
     editFlashCardViewModel: EditFlashCardViewModel
 ) {
+    val question by editFlashCardViewModel.question.collectAsState()
+    val answerOptions by editFlashCardViewModel.answerOptions.collectAsState()
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var selectedAnswerIndex by remember { mutableStateOf(-1) }
@@ -62,7 +64,7 @@ fun EditFlashCard(
             flashCardViewModel.getFlashCardById(flashCardId)
         } else {
             editFlashCardViewModel.setDefaultValues(flashCard)
-            selectedAnswerIndex = flashCard.answerOptions.indexOfFirst { it.isCorrect }
+            selectedAnswerIndex = answerOptions.indexOfFirst { it.isCorrect }
         }
     }
 
@@ -90,7 +92,7 @@ fun EditFlashCard(
 
             flashCard?.let {
                 OutlinedTextField(
-                    value = editFlashCardViewModel.fetchQuestion(),
+                    value = question,
                     onValueChange = { editFlashCardViewModel.updateQuestion(it) },
                     label = { Text("Question") },
                     modifier = Modifier.fillMaxWidth()
@@ -98,7 +100,7 @@ fun EditFlashCard(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-            editFlashCardViewModel.fetchAnswerOptions().forEachIndexed { index, answer ->
+            answerOptions.forEachIndexed { index, answer ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceEvenly,
@@ -109,11 +111,11 @@ fun EditFlashCard(
                         onCheckedChange = { isChecked ->
                             if (isChecked) {
                                 selectedAnswerIndex = index
-                                editFlashCardViewModel.updateCorrectAnswer(editFlashCardViewModel.fetchAnswerOptions()[index])
+                                editFlashCardViewModel.updateCorrectAnswer(answerOptions[index])
 
-                                editFlashCardViewModel.fetchAnswerOptions().forEachIndexed { i, _ ->
-                                    if (i != index) {
-                                        editFlashCardViewModel.setCorrectAnswerFalse(i)
+                                for (nums in 0..<editFlashCardViewModel.answerOptions.value.size) {
+                                    if (nums != index) {
+                                        editFlashCardViewModel.setCorrectAnswerFalse(nums)
                                     }
                                 }
                             } else if (selectedAnswerIndex == index) {
@@ -141,7 +143,7 @@ fun EditFlashCard(
             Row {
                 Button(
                     onClick = {
-                        editFlashCardViewModel.addAnswerOption(AnswerOption("", false))
+                        editFlashCardViewModel.addAnswerOption()
                     },
                     modifier = Modifier.offset((-5).dp)
                 ) {
@@ -152,7 +154,7 @@ fun EditFlashCard(
                 }
                 Button(
                     onClick = {
-                        if (editFlashCardViewModel.fetchAnswerOptions().size > 3) {
+                        if (answerOptions.size > 3) {
                             editFlashCardViewModel.removeAnswerOption()
                         } else {
                             showErrorDialog = true
@@ -171,8 +173,6 @@ fun EditFlashCard(
 
         Button(
             onClick = {
-                val answerOptions = editFlashCardViewModel.fetchAnswerOptions()
-                val question = editFlashCardViewModel.fetchAnswerOptions()
 
                 var hasEmptyAnswer = false
                 var chosenAnswer = false
@@ -206,8 +206,8 @@ fun EditFlashCard(
                         flashCardViewModel.editFlashCard(flashCardIdParam.toInt(),
                             FlashCard(
                                 flashCardViewModel.generateFlashCardId(),
-                                editFlashCardViewModel.fetchQuestion(),
-                                editFlashCardViewModel.fetchAnswerOptions()
+                                question,
+                                answerOptions
                             )
                         )
                     }

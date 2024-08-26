@@ -104,8 +104,6 @@ class MainActivity : ComponentActivity() {
                                     flashCardViewModel = flashCardViewModel,
                                     newFlashCardViewModel = newFlashCardViewModel
                                 )
-                                newFlashCardViewModel.updateQuestion("")
-                                newFlashCardViewModel.refreshAnswerOptions()
                             }
                             composable("EditFlashCard/{flashCardId}", arguments = listOf(navArgument("flashCardId") {
                                 type = NavType.StringType

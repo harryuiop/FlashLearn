@@ -30,7 +30,7 @@ fun Play(
     var showErrorDialog by remember { mutableStateOf(false) }
     var shuffledFlashCards by remember { mutableStateOf(emptyList<FlashCard>()) }
     val context = LocalContext.current
-    
+
     LaunchedEffect(Unit) {
         playViewModel.resetGameResults()
         shuffledFlashCards = flashCards.shuffled()
