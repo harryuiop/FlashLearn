@@ -35,7 +35,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.navigation.NavController
-import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.EditFlashCardViewModel
@@ -62,6 +61,7 @@ fun EditFlashCard(
     val flashCard: FlashCard? = flashCardState
 
     LaunchedEffect(reRenderIndex) {
+        editFlashCardViewModel.resetState()
         if (flashCard == null) {
             flashCardViewModel.getFlashCardById(flashCardId)
         } else {
@@ -120,6 +120,7 @@ fun EditFlashCard(
                                         editFlashCardViewModel.setCorrectAnswerFalse(nums)
                                     }
                                 }
+
                             } else if (selectedAnswerIndex == index) {
                                 editFlashCardViewModel.updateSelectedAnswerIndex(-1)
                                 editFlashCardViewModel.setCorrectAnswerFalse(index)
@@ -130,7 +131,11 @@ fun EditFlashCard(
                     OutlinedTextField(
                         value = answer.answerText,
                         onValueChange = { newAnswer ->
-                            editFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
+                            if (answerOptions[index].isCorrect) {
+                                editFlashCardViewModel.updateAnswerOptions(index, newAnswer, true)
+                            } else {
+                                editFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
+                            }
                         },
                         label = { Text("Answer option") },
                         modifier = Modifier.weight(1f)
@@ -212,6 +217,9 @@ fun EditFlashCard(
                                 answerOptions
                             )
                         )
+                        editFlashCardViewModel.refreshQuestion()
+                        editFlashCardViewModel.refreshSelectedIndex()
+                        editFlashCardViewModel.refreshAnswerOptions()
                     }
                     navController.navigate("ViewFlashCards")
                 } else {

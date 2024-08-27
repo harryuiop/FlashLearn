@@ -2,7 +2,6 @@ package com.example.seng303_assignment1
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +33,6 @@ import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
@@ -80,6 +78,7 @@ class MainActivity : ComponentActivity() {
                                         "EditFlashCard" -> navController.navigate("ViewFlashCards")
                                         else -> navController.navigate("Home")
                                     }
+                                    playViewModel.setShuffledFalse()
                                     playViewModel.resetGameResults()
                                 }) {
                                     Icon(
@@ -129,9 +128,7 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("Play") {
                                 previousScreen = "Home"
-//                                if (navController.currentBackStack.collectAsState().value.last().destination.route != "Play") {
                                 playViewModel.incrementReRenderIndex()
-//                                }
                                 Play(
                                     navController = navController,
                                     flashCardViewModel = flashCardViewModel,
@@ -139,6 +136,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                             composable("EndGame") {
+                                playViewModel.setShuffledFalse()
                                 previousScreen = "Play"
                                 EndGame(
                                     playViewModel = playViewModel,

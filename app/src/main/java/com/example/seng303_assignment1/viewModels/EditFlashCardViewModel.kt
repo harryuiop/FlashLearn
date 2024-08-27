@@ -1,6 +1,5 @@
 package com.example.seng303_assignment1.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
@@ -72,6 +71,28 @@ class EditFlashCardViewModel: ViewModel() {
             val newList = _answerOptions.value.dropLast(1)
             _answerOptions.value = newList
         }
+    }
+
+    fun refreshQuestion() {
+        _question.value= ""
+    }
+
+    fun refreshAnswerOptions() {
+        _answerOptions.value = listOf(
+            AnswerOption("", false),
+            AnswerOption("", false),
+            AnswerOption("", false)
+        )
+    }
+
+    fun refreshSelectedIndex() {
+        _selectedAnswerIndex.value = -1
+    }
+
+    fun resetState() {
+        _question.value = ""
+        _answerOptions.value = List(3) { AnswerOption("", false) }
+        _selectedAnswerIndex.value = -1
     }
 
     fun setDefaultValues(selectedFlashCard: FlashCard?) {

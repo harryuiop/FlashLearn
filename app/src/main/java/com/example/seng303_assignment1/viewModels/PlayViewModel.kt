@@ -26,6 +26,9 @@ class PlayViewModel: ViewModel() {
     private val _index = MutableStateFlow(0)
     val index: StateFlow<Int> = _index
 
+    private val _shuffled = MutableStateFlow(false)
+    val shuffled: StateFlow<Boolean> = _shuffled
+
     fun incrementIndex() {
         _index.value = index.value + 1
     }
@@ -43,7 +46,7 @@ class PlayViewModel: ViewModel() {
     }
 
     fun incrementCorrectAnswersTotal() {
-        _correctAnswersTotal.value = correctAnswersTotal.value + 1;
+        _correctAnswersTotal.value = correctAnswersTotal.value + 1
     }
 
     fun addToGameResults(newGameRoundResult: GameRoundResult) {
@@ -51,6 +54,14 @@ class PlayViewModel: ViewModel() {
         _gameResults.value = newResultAdded
         Log.e("adding result", _gameResults.value.toString())
         Log.e("adding result", gameResults.value.toString())
+    }
+
+    fun setShuffledFalse() {
+        _shuffled.value = false
+    }
+
+    fun setShuffledTrue() {
+        _shuffled.value = true
     }
 
     fun resetGameResults() {

@@ -1,6 +1,5 @@
 package com.example.seng303_assignment1.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +24,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.seng303_assignment1.model.AnswerOption
 import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.viewModels.FlashCardViewModel
 import com.example.seng303_assignment1.viewModels.NewFlashCardViewModel
@@ -119,7 +116,11 @@ fun NewFlashCard(
                     OutlinedTextField(
                         value = answer.answerText,
                         onValueChange = { newAnswer ->
-                            newFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
+                            if (answerOptions[index].isCorrect) {
+                                newFlashCardViewModel.updateAnswerOptions(index, newAnswer, true)
+                            } else {
+                                newFlashCardViewModel.updateAnswerOptions(index, newAnswer, false)
+                            }
                         },
                         label = { Text("Answer option") },
                         modifier = Modifier.weight(1f)
@@ -200,6 +201,9 @@ fun NewFlashCard(
 
                 if (!hasEmptyAnswer) {
                     flashCardViewModel.createFlashCard(question, answerOptions)
+                    newFlashCardViewModel.refreshQuestion()
+                    newFlashCardViewModel.refreshAnswerOptions()
+                    newFlashCardViewModel.refreshSelectedIndex()
                     navController.navigate("ViewFlashCards")
                 } else {
                     showErrorDialog = true

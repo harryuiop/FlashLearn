@@ -35,12 +35,12 @@ fun Play(
     var showErrorDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-//    val top = navController.currentBackStack.collectAsState().value.last().destination.route
-//    Log.e("val", top.toString())
-
     LaunchedEffect(reRenderIndex) {
-//        playViewModel.resetGameResults()
-        playViewModel.setShuffledFlashCards(flashCards.shuffled())
+        if (!playViewModel.shuffled.value) {
+            playViewModel.setShuffledFlashCards(flashCards.shuffled())
+            playViewModel.setShuffledTrue()
+            Log.e("shuffled", "true")
+        }
     }
 
     if (shuffledFlashCards.isNotEmpty()) {

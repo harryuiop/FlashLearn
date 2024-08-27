@@ -68,6 +68,10 @@ class NewFlashCardViewModel() : ViewModel() {
         }
     }
 
+    fun refreshQuestion() {
+        _question.value= ""
+    }
+
     fun refreshAnswerOptions() {
         _answerOptions.value = listOf(
             AnswerOption("", false),
@@ -75,6 +79,11 @@ class NewFlashCardViewModel() : ViewModel() {
             AnswerOption("", false)
         )
     }
+
+    fun refreshSelectedIndex() {
+        _selectedAnswerIndex.value = -1
+    }
+
 }
 
 
