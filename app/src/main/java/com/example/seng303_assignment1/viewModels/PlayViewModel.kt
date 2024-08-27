@@ -1,6 +1,5 @@
 package com.example.seng303_assignment1.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.seng303_assignment1.model.FlashCard
 import com.example.seng303_assignment1.model.GameRoundResult
@@ -52,8 +51,6 @@ class PlayViewModel: ViewModel() {
     fun addToGameResults(newGameRoundResult: GameRoundResult) {
         val newResultAdded = _gameResults.value + newGameRoundResult
         _gameResults.value = newResultAdded
-        Log.e("adding result", _gameResults.value.toString())
-        Log.e("adding result", gameResults.value.toString())
     }
 
     fun setShuffledFalse() {

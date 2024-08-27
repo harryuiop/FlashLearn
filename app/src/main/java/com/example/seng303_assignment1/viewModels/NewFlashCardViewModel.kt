@@ -1,6 +1,5 @@
 package com.example.seng303_assignment1.viewModels
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.seng303_assignment1.model.AnswerOption
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,7 +57,6 @@ class NewFlashCardViewModel() : ViewModel() {
     fun addAnswerOption() {
         val newList = _answerOptions.value + AnswerOption("", false)
         _answerOptions.value = newList
-        Log.e("list", newList.toString())
     }
 
     fun removeAnswerOption() {

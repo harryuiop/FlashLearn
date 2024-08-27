@@ -1,7 +1,6 @@
 package com.example.seng303_assignment1.screens
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -39,7 +38,6 @@ fun Play(
         if (!playViewModel.shuffled.value) {
             playViewModel.setShuffledFlashCards(flashCards.shuffled())
             playViewModel.setShuffledTrue()
-            Log.e("shuffled", "true")
         }
     }
 
